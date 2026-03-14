@@ -4,6 +4,8 @@
 
 Una plataforma de portafolio moderna, elegante y de alto rendimiento construida con **Laravel 10**, diseñada para impresionar con una estética **Cyberpunk-Glassmorphism** y efectos 3D dinámicos.
 
+🔗 **Demo en vivo:** [portafolio.americolabs.com](https://portafolio.americolabs.com/)
+
 ---
 
 ## ✨ Características Principales
