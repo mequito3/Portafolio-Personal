@@ -8,6 +8,7 @@ use App\Models\Skill;
 use App\Models\Experience;
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class PortfolioController extends Controller
 {
@@ -59,6 +60,28 @@ class PortfolioController extends Controller
         ];
 
         return view('portfolio', compact('profile', 'projects', 'skills', 'experiences'));
+    }
+
+    /**
+     * Muestra el detalle de un proyecto.
+     */
+    public function show(Project $project): View
+    {
+        // Cargar admin user para el header/footer
+        $admin = User::where('is_admin', true)->first();
+        
+        $profile = [
+            'logo'     => $admin?->logo,
+            'logo_dark'=> $admin?->logo_dark,
+            'favicon'  => $admin?->favicon,
+            'social'   => [
+                'github'   => $admin?->github_url   ?? '#',
+                'linkedin' => $admin?->linkedin_url ?? '#',
+                'twitter'  => $admin?->twitter_url  ?? '#',
+            ],
+        ];
+
+        return view('projects.show', compact('project', 'profile'));
     }
 
     /**

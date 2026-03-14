@@ -60,6 +60,10 @@ class ProjectController extends Controller
             $data['image'] = $request->file('image')->store('projects', 'public');
         }
 
+        if ($request->hasFile('gallery_images')) {
+            $data['images'] = $this->uploadGallery($request->file('gallery_images'));
+        }
+
         Project::create($data);
 
         return redirect()
@@ -91,6 +95,18 @@ class ProjectController extends Controller
             $data['image'] = $request->file('image')->store('projects', 'public');
         }
 
+        if ($request->hasFile('gallery_images')) {
+            // Eliminar imágenes de galería anteriores
+            if (is_array($project->images)) {
+                foreach ($project->images as $oldImage) {
+                    if (!Str::startsWith($oldImage, 'http')) {
+                        Storage::disk('public')->delete($oldImage);
+                    }
+                }
+            }
+            $data['images'] = $this->uploadGallery($request->file('gallery_images'));
+        }
+
         $project->update($data);
 
         return redirect()
@@ -107,6 +123,14 @@ class ProjectController extends Controller
             Storage::disk('public')->delete($project->image);
         }
 
+        if (is_array($project->images)) {
+            foreach ($project->images as $oldImage) {
+                if (!Str::startsWith($oldImage, 'http')) {
+                    Storage::disk('public')->delete($oldImage);
+                }
+            }
+        }
+
         $project->delete();
         return back()->with('success', 'Proyecto eliminado.');
     }
@@ -120,5 +144,17 @@ class ProjectController extends Controller
             return [];
         }
         return array_map('trim', explode(',', $tags));
+    }
+
+    /**
+     * Sube múltiples imágenes a la galería.
+     */
+    private function uploadGallery(array $files): array
+    {
+        $paths = [];
+        foreach ($files as $file) {
+            $paths[] = $file->store('projects/gallery', 'public');
+        }
+        return $paths;
     }
 }

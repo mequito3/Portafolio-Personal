@@ -13,7 +13,9 @@ class Project extends Model
     protected $fillable = [
         'title',
         'description',
+        'content',
         'image',
+        'images',
         'tags',
         'github_url',
         'demo_url',
@@ -24,6 +26,7 @@ class Project extends Model
 
     protected $casts = [
         'tags'        => 'array',
+        'images'      => 'array',
         'is_featured' => 'boolean',
         'is_active'   => 'boolean',
         'order'       => 'integer',

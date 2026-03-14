@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 // ── Portfolio público ────────────────────────────────────────────────────────
 Route::get('/', [PortfolioController::class , 'index'])->name('portfolio.index');
+Route::get('/projects/{project}', [PortfolioController::class, 'show'])->name('portfolio.projects.show');
 Route::post('/contact', [PortfolioController::class , 'contact'])->name('portfolio.contact');
 
 // ── Auth ─────────────────────────────────────────────────────────────────────

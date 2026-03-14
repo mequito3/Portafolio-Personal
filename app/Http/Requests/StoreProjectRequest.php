@@ -16,7 +16,9 @@ class StoreProjectRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
+            'content' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'max:5120'],
+            'gallery_images.*' => ['nullable', 'image', 'max:5120'],
             'tags' => ['nullable', 'string', 'max:500'],
             'github_url' => ['nullable', 'string', 'max:500'],
             'demo_url' => ['nullable', 'string', 'max:500'],

@@ -29,10 +29,17 @@
             </div>
 
             <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-[2px] mb-3 ml-1">Descripción Breve</label>
-                <textarea name="description" rows="4" required
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-[2px] mb-3 ml-1">Descripción Breve (Para la tarjeta de la Home)</label>
+                <textarea name="description" rows="3" required
                           class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.08] transition-all resize-none"
                           placeholder="Cuéntanos un poco sobre este proyecto...">{{ old('description', $project?->description) }}</textarea>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-[2px] mb-3 ml-1">Contenido Detallado (Para la página de detalles)</label>
+                <textarea name="content" rows="10" 
+                          class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.08] transition-all resize-y"
+                          placeholder="Explica por qué usaste qué tecnología, los retos del proyecto... Suporta HTML si es necesario.">{{ old('content', $project?->content) }}</textarea>
             </div>
         </div>
 
@@ -173,6 +180,23 @@
                     <div class="mt-5 glass p-3 inline-block rounded-2xl border-white/5">
                         <p class="text-[10px] text-gray-500 uppercase tracking-[2px] mb-2 ml-1">Imagen Actual:</p>
                         <img src="{{ Str::startsWith($project->image, 'http') ? $project->image : asset('storage/' . $project->image) }}" alt="Preview" class="h-24 w-auto rounded-xl border border-white/10 object-cover shadow-lg">
+                    </div>
+                @endif
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-[2px] mb-3 ml-1">Galería de Imágenes (Capturas de pantalla)</label>
+                <div class="relative group">
+                    <input type="file" name="gallery_images[]" accept="image/*" multiple
+                           class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-indigo-500/20 file:text-indigo-400 hover:file:bg-indigo-500/30 transition-all cursor-pointer">
+                </div>
+                @if(isset($project) && is_array($project->images))
+                    <div class="mt-5 glass p-4 rounded-2xl border-white/5 flex flex-wrap gap-3">
+                        @foreach($project->images as $img)
+                            <div class="relative group/img">
+                                <img src="{{ Str::startsWith($img, 'http') ? $img : asset('storage/' . $img) }}" alt="Gallery Item" class="h-16 w-16 rounded-lg border border-white/10 object-cover shadow-lg">
+                            </div>
+                        @endforeach
                     </div>
                 @endif
             </div>
