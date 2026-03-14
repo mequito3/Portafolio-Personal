@@ -425,7 +425,7 @@
                     </div>
                     
                     <!-- Social Links -->
-                    <div class="flex flex-wrap items-center gap-6 pt-4">
+                    <div class="flex flex-col gap-6 pt-4">
                         <div class="flex gap-4">
                             <a href="{{ $profile['social']['github'] }}" target="_blank" class="p-3 glass rounded-xl hover:bg-white/10 transition-all hover:scale-110">
                                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -445,8 +445,8 @@
                         </div>
 
                         {{-- Footer Logo --}}
-                        <div class="relative flex items-center justify-center p-2">
-                            <div class="absolute inset-0 bg-neon-cyan/20 blur-[15px] rounded-full scale-110 mix-blend-lighten pointer-events-none"></div>
+                        <div class="relative flex items-center justify-start p-2 max-w-[150px]">
+                            <div class="absolute inset-0 bg-white/20 blur-[15px] rounded-full scale-110 mix-blend-lighten pointer-events-none"></div>
                             @if(isset($profile['logo']) && $profile['logo'])
                                 <img src="{{ Str::startsWith($profile['logo'], 'http') ? $profile['logo'] : asset('storage/' . $profile['logo']) }}" 
                                      class="relative z-10 h-10 w-auto object-contain opacity-80 hover:opacity-100 transition-all duration-300 hover:scale-110">
