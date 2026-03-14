@@ -1,299 +1,7 @@
-<!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Portafolio profesional de {{ $profile['name'] }} - {{ $profile['title'] }}">
-    <title>{{ $profile['name'] }} | {{ $profile['title'] }}</title>
-    
-    @if(isset($profile['favicon']) && $profile['favicon'])
-        <link rel="icon" type="image/png" href="{{ Str::startsWith($profile['favicon'], 'http') ? $profile['favicon'] : asset('storage/' . $profile['favicon']) }}">
-    @endif
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'sans-serif'],
-                        'display': ['Space Grotesk', 'sans-serif'],
-                    },
-                    colors: {
-                        'neon-cyan': '#00ffff',
-                        'neon-magenta': '#ff00ff',
-                        'neon-purple': '#a855f7',
-                        'dark': {
-                            900: '#0a0a0f',
-                            800: '#12121a',
-                            700: '#1a1a25',
-                            600: '#252530',
-                        }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'float-delayed': 'float 6s ease-in-out 2s infinite',
-                        'glow': 'glow 2s ease-in-out infinite alternate',
-                        'gradient': 'gradient 8s ease infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <style>
-        /* Custom Animations */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
-        }
-        
-        @keyframes glow {
-            from { box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.1); }
-            to { box-shadow: 0 0 30px rgba(255, 0, 255, 0.4), 0 0 60px rgba(255, 0, 255, 0.2); }
-        }
-        
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        @keyframes progressBar {
-            from { width: 0%; }
-        }
-        
-        /* Glassmorphism */
-        .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .glass-dark {
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        /* Neon Text */
-        .neon-text {
-            text-shadow: 
-                0 0 10px currentColor,
-                0 0 20px currentColor,
-                0 0 40px currentColor;
-        }
-        
-        /* Gradient Text */
-        .gradient-text {
-            background: linear-gradient(135deg, #00ffff, #ff00ff, #a855f7, #00ffff);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient 8s ease infinite;
-        }
-        
-        /* Canvas 3D */
-        #scene-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-        
-        /* Scroll animations */
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .animate-on-scroll.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* Progress bar animation */
-        .progress-bar {
-            animation: progressBar 1.5s ease-out forwards;
-        }
-        
-        /* Card 3D effect */
-        .card-3d {
-            transform-style: preserve-3d;
-            perspective: 1000px;
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        
-        .card-3d:hover {
-            transform: rotateY(5deg) rotateX(5deg) translateZ(20px);
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #0a0a0f;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #00ffff, #ff00ff);
-            border-radius: 4px;
-        }
-        
-        /* Navigation */
-        .nav-link {
-            position: relative;
-        }
-        
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #00ffff, #ff00ff);
-            transition: width 0.3s ease;
-        }
-        
-        .nav-link:hover::after,
-        .nav-link.active::after {
-            width: 100%;
-        }
-        
-        /* Button glow */
-        .btn-glow {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-glow::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        .btn-glow:hover::before {
-            left: 100%;
-        }
-        
-        /* Project card image */
-        .project-image {
-            transition: transform 0.5s ease;
-        }
-        
-        .project-card:hover .project-image {
-            transform: scale(1.1);
-        }
-        
-        /* Skill pill */
-        .skill-pill {
-            transition: all 0.3s ease;
-        }
-        
-        .skill-pill:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.2);
-        }
-    </style>
-</head>
-<body class="bg-dark-900 text-white font-sans antialiased overflow-x-hidden selection:bg-neon-magenta/30 selection:text-white">
-    
-    <!-- Reading Progress Bar -->
-    <div class="fixed top-0 left-0 h-1 bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-magenta z-[100] transition-all duration-150 ease-out" id="reading-progress" style="width: 0%"></div>
+@extends('layouts.app')
 
-    <!-- 3D Scene Container -->
-    <canvas id="scene-container"></canvas>
+@section('content')
     
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 glass-dark">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between min-h-[4rem] py-2">
-                <!-- Logo -->
-                <a href="#hero" class="relative flex items-center justify-center group py-2 ml-2">
-                    <!-- Difuminado Intenso Profesional -->
-                    <div class="absolute inset-0 bg-white/40 blur-[24px] rounded-[100%] group-hover:bg-white/60 group-hover:blur-[30px] transition-all duration-500 scale-[1.7] md:scale-[2.0] mix-blend-lighten pointer-events-none"></div>
-                    
-                    @if(isset($profile['logo']) && $profile['logo'])
-                        <img src="{{ Str::startsWith($profile['logo'], 'http') ? $profile['logo'] : asset('storage/' . $profile['logo']) }}" alt="{{ $profile['name'] }} Logo" class="relative z-10 h-8 md:h-10 w-auto object-contain opacity-100 group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_4px_20px_rgba(255,255,255,0.4)]">
-                    @else
-                        <img src="{{ asset('images/logo.png') }}" alt="{{ $profile['name'] }} Logo" class="relative z-10 h-8 md:h-10 w-auto object-contain filter invert opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_4px_20px_rgba(255,255,255,0.4)]">
-                    @endif
-                </a>
-                
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#hero" class="nav-link text-gray-300 hover:text-white transition-colors">Inicio</a>
-                    <a href="#about" class="nav-link text-gray-300 hover:text-white transition-colors">Sobre Mí</a>
-                    <a href="#projects" class="nav-link text-gray-300 hover:text-white transition-colors">Proyectos</a>
-                    <a href="#skills" class="nav-link text-gray-300 hover:text-white transition-colors">Skills</a>
-                    <a href="#contact" class="nav-link text-gray-300 hover:text-white transition-colors">Contacto</a>
-                </div>
-                
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg glass">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden glass-dark">
-            <div class="px-4 py-4 space-y-3">
-                <a href="#hero" class="block text-gray-300 hover:text-white transition-colors py-2">Inicio</a>
-                <a href="#about" class="block text-gray-300 hover:text-white transition-colors py-2">Sobre Mí</a>
-                <a href="#projects" class="block text-gray-300 hover:text-white transition-colors py-2">Proyectos</a>
-                <a href="#skills" class="block text-gray-300 hover:text-white transition-colors py-2">Skills</a>
-                <a href="#contact" class="block text-gray-300 hover:text-white transition-colors py-2">Contacto</a>
-            </div>
-        </div>
-    </nav>
-
     <!-- Hero Section -->
     <section id="hero" class="relative min-h-screen flex items-center justify-center px-4">
         <div class="relative z-10 text-center max-w-4xl mx-auto">
@@ -356,22 +64,7 @@
         </div>
     </section>
 
-    <!-- Back to Top -->
-    <a href="#hero" id="backToTop" class="fixed bottom-5 left-5 z-[100] p-4 glass rounded-full opacity-0 translate-y-10 pointer-events-none transition-all duration-300 hover:bg-white/10 group hover:-translate-y-1 shadow-[0_0_15px_rgba(0,255,255,0.2)]">
-        <svg class="w-6 h-6 text-neon-cyan group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-        </svg>
-    </a>
 
-    <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $profile['phone'] ?? '1234567890') }}?text=Hola,%20vi%20tu%20portafolio%20y%20me%20gustar%C3%ADa%20contactarte." 
-       target="_blank" 
-       rel="noopener noreferrer"
-       class="fixed bottom-5 right-5 z-[100] p-4 bg-green-500 rounded-full transition-all duration-300 hover:bg-green-400 hover:-translate-y-1 hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.4)] group flex items-center justify-center">
-        <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
-        </svg>
-    </a>
 
     <!-- About Section -->
     <section id="about" class="relative py-20 lg:py-32 px-4 scroll-mt-16">
@@ -450,6 +143,73 @@
         </div>
     </section>
 
+    <!-- Services Section -->
+    <section id="services" class="relative py-20 lg:py-32 px-4 scroll-mt-16 overflow-hidden">
+        <!-- Background decorative elements -->
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-neon-cyan/10 blur-[120px] rounded-full pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-neon-magenta/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto relative z-10">
+            <!-- Section Header -->
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-4xl md:text-5xl font-display font-bold mb-4">
+                    Servicios <span class="gradient-text">Profesionales</span>
+                </h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-neon-cyan to-neon-magenta mx-auto rounded-full"></div>
+                <p class="text-gray-400 mt-6 max-w-2xl mx-auto">
+                    Soluciones tecnológicas integrales que combinan potencia técnica con diseño de vanguardia.
+                </p>
+            </div>
+
+            <!-- Services Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Service 1: Web Development -->
+                <div class="glass p-8 rounded-3xl group hover:-translate-y-2 transition-all duration-300 animate-on-scroll">
+                    <div class="w-14 h-14 bg-neon-cyan/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-neon-cyan/30 group-hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] transition-all">
+                        <i class="fas fa-laptop-code text-2xl text-neon-cyan"></i>
+                    </div>
+                    <h3 class="text-xl font-display font-bold mb-4 group-hover:text-neon-cyan transition-colors">Desarrollo Web & CMS</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Creación de ecosistemas web robustos usando Laravel para lógica compleja y WordPress para una gestión de contenidos ágil y profesional.
+                    </p>
+                </div>
+
+                <!-- Service 2: Mobile Development -->
+                <div class="glass p-8 rounded-3xl group hover:-translate-y-2 transition-all duration-300 animate-on-scroll" style="transition-delay: 100ms;">
+                    <div class="w-14 h-14 bg-neon-purple/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-neon-purple/30 group-hover:shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all">
+                        <i class="fas fa-mobile-alt text-2xl text-neon-purple"></i>
+                    </div>
+                    <h3 class="text-xl font-display font-bold mb-4 group-hover:text-neon-purple transition-colors">Desarrollo Móvil</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Apps nativas y multiplataforma con interfaces fluidas, diseñadas para escalar y ofrecer una experiencia superior en cualquier dispositivo.
+                    </p>
+                </div>
+
+                <!-- Service 3: n8n Automation -->
+                <div class="glass p-8 rounded-3xl group hover:-translate-y-2 transition-all duration-300 animate-on-scroll" style="transition-delay: 200ms;">
+                    <div class="w-14 h-14 bg-neon-magenta/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-neon-magenta/30 group-hover:shadow-[0_0_20_rgba(255,0,255,0.4)] transition-all">
+                        <i class="fas fa-project-diagram text-2xl text-neon-magenta"></i>
+                    </div>
+                    <h3 class="text-xl font-display font-bold mb-4 group-hover:text-neon-magenta transition-colors">Automatización n8n</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Diseño de flujos de trabajo inteligentes con n8n, conectando herramientas y automatizando tareas repetitivas para maximizar tu eficiencia.
+                    </p>
+                </div>
+
+                <!-- Service 4: APIs & Cloud Architecture -->
+                <div class="glass p-8 rounded-3xl group hover:-translate-y-2 transition-all duration-300 animate-on-scroll" style="transition-delay: 300ms;">
+                    <div class="w-14 h-14 bg-cyan-400/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-cyan-400/30 group-hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-all">
+                        <i class="fas fa-cloud-upload-alt text-2xl text-cyan-400"></i>
+                    </div>
+                    <h3 class="text-xl font-display font-bold mb-4 group-hover:text-cyan-400 transition-colors">APIs & Cloud</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Arquitectura de backend robusta y despliegue optimizado, garantizando que tus aplicaciones funcionen con la máxima velocidad y seguridad.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Projects Section -->
     <section id="projects" class="relative py-20 lg:py-32 px-4 scroll-mt-16">
         <div class="max-w-7xl mx-auto">
@@ -498,24 +258,32 @@
                 @foreach($projects as $index => $project)
                 @php $projectTags = collect((array)$project->tags)->map(fn($t) => Str::slug($t))->implode(' '); @endphp
                 <div class="project-card card-3d glass rounded-2xl overflow-hidden group animate-on-scroll" data-tags="{{ $projectTags }}" style="animation-delay: {{ $index * 0.1 }}s;">
-                    <!-- Image -->
-                    <a href="{{ route('portfolio.projects.show', $project) }}" class="block relative h-48 overflow-hidden">
-                        <img src="{{ $project->image ? (Str::startsWith($project->image, 'http') ? $project->image : asset('storage/' . $project->image)) : 'https://via.placeholder.com/600x400/1a1a25/00ffff?text=Proyecto' }}" alt="{{ $project->title }}" class="project-image w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <!-- Image Area -->
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="{{ $project->image ? (Str::startsWith($project->image, 'http') ? $project->image : asset('storage/' . $project->image)) : 'https://via.placeholder.com/600x400/1a1a25/00ffff?text=Proyecto' }}" alt="{{ $project->title }}" class="project-image w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent"></div>
                         
-                        <!-- Overlay Links -->
-                        <div class="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                            <a href="{{ $project->github_url ?? '#' }}" class="p-2 glass rounded-lg hover:bg-white/20 transition-colors" title="GitHub">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                </svg>
+                        <!-- Overlay clickable area for Details -->
+                        <a href="{{ route('portfolio.projects.show', $project) }}" class="absolute inset-0 z-10"></a>
+
+                        <!-- Overlay Buttons (Highest Z-index) -->
+                        <div class="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                            @if($project->github_url)
+                            <a href="{{ $project->github_url }}" target="_blank" class="p-2 glass rounded-lg hover:bg-neon-magenta/20 hover:text-neon-magenta hover:border-neon-magenta/50 transition-all" title="Ver Código">
+                                <i class="fab fa-github text-lg"></i>
                             </a>
+                            @endif
+                            @if($project->demo_url)
+                            <a href="{{ $project->demo_url }}" target="_blank" class="p-2 glass rounded-lg hover:bg-neon-cyan/20 hover:text-neon-cyan hover:border-neon-cyan/50 transition-all" title="Ver Demo">
+                                <i class="fas fa-external-link-alt text-sm"></i>
+                            </a>
+                            @endif
                         </div>
-                    </a>
+                    </div>
                     
                     <!-- Content -->
                     <div class="p-6">
-                        <a href="{{ route('portfolio.projects.show', $project) }}" class="block mb-2 group-link">
+                        <a href="{{ route('portfolio.projects.show', $project) }}" class="block mb-2 group/title">
                             <h3 class="font-display text-xl font-semibold group-hover:text-neon-cyan transition-colors italic">
                                 {{ $project->title }}
                             </h3>
@@ -527,7 +295,7 @@
                         <!-- Tags -->
                         <div class="flex flex-wrap gap-2">
                             @foreach((array)$project->tags as $tag)
-                            <span class="px-3 py-1 text-xs rounded-full bg-dark-700 text-gray-300 border border-dark-600">
+                            <span class="px-3 py-1 text-[10px] uppercase font-bold tracking-wider rounded-full bg-dark-700 text-gray-300 border border-dark-600">
                                 {{ $tag }}
                             </span>
                             @endforeach
@@ -739,8 +507,11 @@
         </div>
     </footer>
 
-    <!-- 3D Scene Container -->
-    <canvas id="scene-container"></canvas>
+@endsection
+
+@section('scripts')
+    <!-- 3D Scene Container moved to layout, but we can keep it here if layout doesn't have it -->
+    <!-- Actually layout has it, so we can remove it here if redundant -->
 
     <!-- Contact Form AJAX Script -->
     <script>
@@ -1114,112 +885,9 @@
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
         })();
-        
-        // ============================================
-        // Scroll Animations
-        // ============================================
-        
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-        
-        document.querySelectorAll('.animate-on-scroll').forEach(el => {
-            observer.observe(el);
-        });
-        
-        // ============================================
-        // Mobile Menu Toggle
-        // ============================================
-        
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-        
-        // Close mobile menu when clicking a link
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-            });
-        });
-        
-        // ============================================
-        // Active Navigation Link
-        // ============================================
-        
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.nav-link');
-        
-        window.addEventListener('scroll', () => {
-            let current = '';
-            
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                
-                if (scrollY >= sectionTop - 200) {
-                    current = section.getAttribute('id');
-                }
-            });
-            
-            navLinks.forEach(link => {
-                link.classList.remove('active', 'text-white');
-                link.classList.add('text-gray-300');
-                if (link.getAttribute('href') === `#${current}`) {
-                    link.classList.add('active', 'text-white');
-                    link.classList.remove('text-gray-300');
-                }
-            });
-        });
-        
-        // ============================================
-        // Initial animations
-        // ============================================
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                document.querySelectorAll('#hero .animate-on-scroll').forEach((el, i) => {
-                    setTimeout(() => {
-                        el.classList.add('visible');
-                    }, i * 100);
-                });
-            }, 300);
-        });
 
         // ============================================
-        // Reading Progress
+        // Scroll Animations, Menu, etc.
         // ============================================
-        
-        const readingProgress = document.getElementById('reading-progress');
-        const backToTop = document.getElementById('backToTop');
-        
-        window.addEventListener('scroll', () => {
-            const documentHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrollPercentage = (window.scrollY / documentHeight) * 100;
-            if(readingProgress) {
-                readingProgress.style.width = scrollPercentage + '%';
-            }
-
-            if(window.scrollY > 500) {
-                backToTop.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
-                backToTop.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
-            } else {
-                backToTop.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
-                backToTop.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
-            }
-        });
-        
     </script>
-</body>
-</html>
+@endsection

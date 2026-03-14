@@ -3,14 +3,10 @@
 @section('title', $project->title . ' - Detalle del Proyecto')
 
 @section('content')
-<div class="min-h-screen pt-32 pb-20 px-4 md:px-8">
+<div class="min-h-screen pt-24 md:pt-32 pb-20 px-4 md:px-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header del Proyecto -->
         <div class="mb-12 animate-fade-in" style="animation-delay: 0.1s">
-            <a href="{{ route('portfolio.index') }}#projects" class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all mb-8 group">
-                <i class="fas fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
-                <span class="text-xs font-bold uppercase tracking-[2px]">Volver al Portafolio</span>
-            </a>
 
             <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
                 <div>
@@ -50,7 +46,7 @@
             <!-- Columna Izquierda: Imagen y Galería -->
             <div class="lg:col-span-2 space-y-8 animate-fade-in" style="animation-delay: 0.2s">
                 <!-- Imagen Principal -->
-                <div class="glass-card overflow-hidden rounded-[2.5rem] border-white/5 shadow-2xl group">
+                <div class="glass-card overflow-hidden rounded-3xl md:rounded-[2.5rem] border-white/5 shadow-2xl group">
                     <img src="{{ Str::startsWith($project->image, 'http') ? $project->image : asset('storage/' . $project->image) }}" 
                          alt="{{ $project->title }}" 
                          class="w-full aspect-video object-cover transition-transform duration-700 group-hover:scale-105">
@@ -70,7 +66,7 @@
                 @endif
 
                 <!-- Contenido Detallado -->
-                <div class="glass-card p-8 md:p-12 rounded-[2.5rem] border-white/5 animate-fade-in" style="animation-delay: 0.3s">
+                <div class="glass-card p-6 md:p-12 rounded-3xl md:rounded-[2.5rem] border-white/5 animate-fade-in" style="animation-delay: 0.3s">
                     <h3 class="text-2xl font-display font-bold text-white mb-8 italic flex items-center gap-4">
                         <span class="w-12 h-[2px] bg-indigo-500"></span>
                         Sobre el Proyecto
@@ -87,7 +83,7 @@
 
             <!-- Columna Derecha: Sidebar con info rápida -->
             <div class="space-y-8 animate-fade-in" style="animation-delay: 0.4s">
-                <div class="glass-card p-8 rounded-[2.5rem] border-white/5 sticky top-32">
+                <div class="glass-card p-8 rounded-3xl md:rounded-[2.5rem] border-white/5 sticky top-32">
                     <h4 class="text-xs font-bold text-gray-500 uppercase tracking-[3px] mb-8">Ficha Técnica</h4>
                     
                     <ul class="space-y-6">
@@ -148,14 +144,40 @@
     <img :src="imgUrl" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl animate-zoom-in">
 </div>
 
+@section('styles')
+<style>
+    .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade-in {
+        animation: fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+    }
+
+    @keyframes zoom-in {
+        from { transform: scale(0.95); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    
+    .animate-zoom-in {
+        animation: zoom-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+</style>
+@endsection
+
+@section('scripts')
 <script>
     function openLightbox(url) {
         window.dispatchEvent(new CustomEvent('lightbox', { detail: url }));
     }
 </script>
-
-<style>
-    .prose h3 { color: white; font-style: italic; font-family: inherit; }
-    .prose p { margin-bottom: 1.5rem; }
-</style>
 @endsection
