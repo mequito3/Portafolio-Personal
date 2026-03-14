@@ -6,6 +6,8 @@ Una plataforma de portafolio moderna, elegante y de alto rendimiento construida 
 
 🔗 **Demo en vivo:** [portafolio.americolabs.com](https://portafolio.americolabs.com/)
 
+![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+
 ---
 
 ## ✨ Características Principales
