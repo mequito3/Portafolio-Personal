@@ -1,6 +1,6 @@
 # 🚀 Premium Developer Portfolio - Americo Labs
 
-![Portfolio Banner](public/screenshots/banner.png)
+
 
 Una plataforma de portafolio moderna, elegante y de alto rendimiento construida con **Laravel 10**, diseñada para impresionar con una estética **Cyberpunk-Glassmorphism** y efectos 3D dinámicos.
 
@@ -92,9 +92,6 @@ Visita `http://127.0.0.1:8000` para ver tu portafolio.
 > [!TIP]
 > Puedes personalizar todos los logos y colores desde el panel de administración en `/admin/profile`.
 
-| Sección Hero (Desktop) | Panel Admin (Seguro) |
-| :--- | :--- |
-| ![Hero](https://via.placeholder.com/400x250/0a0a0f/00ffff?text=Hero+Section) | ![Admin](https://via.placeholder.com/400x250/1a1a25/ff00ff?text=Admin+Panel) |
 
 ---
 
