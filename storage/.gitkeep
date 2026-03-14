@@ -1,0 +1,10 @@
+{
+    "paths": [
+        "app/.gitignore",
+        "framework/cache/data/.gitignore",
+        "framework/sessions/.gitignore",
+        "framework/testing/.gitignore",
+        "framework/views/.gitignore",
+        "logs/.gitignore"
+    ]
+}
