@@ -190,9 +190,9 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between min-h-[4rem] py-2">
                 <a href="{{ route('portfolio.index') }}#hero" class="relative flex items-center justify-center group py-2 ml-2">
-                    <div class="absolute inset-0 bg-white/40 blur-[24px] rounded-[100%] scale-[1.7] md:scale-[2.0] mix-blend-lighten pointer-events-none"></div>
+                    <div class="absolute inset-0 bg-white/20 md:bg-white/40 blur-[15px] md:blur-[24px] rounded-[100%] scale-[1.2] md:scale-[2.0] mix-blend-lighten pointer-events-none"></div>
                     @if(isset($profile['logo']) && $profile['logo'])
-                        <img src="{{ Str::startsWith($profile['logo'], 'http') ? $profile['logo'] : asset('storage/' . $profile['logo']) }}" class="relative z-10 h-8 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-110">
+                        <img src="{{ Str::startsWith($profile['logo'], 'http') ? $profile['logo'] : asset('storage/' . $profile['logo']) }}" class="relative z-10 h-9 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-110">
                     @endif
                 </a>
                 

@@ -3,17 +3,17 @@
 @section('title', $project->title . ' - Detalle del Proyecto')
 
 @section('content')
-<div class="min-h-screen pt-24 md:pt-32 pb-20 px-4 md:px-8">
+<div class="min-h-screen pt-20 md:pt-32 pb-20 px-4 md:px-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header del Proyecto -->
         <div class="mb-12 animate-fade-in" style="animation-delay: 0.1s">
 
             <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
                 <div>
-                    <h1 class="text-4xl md:text-6xl font-display font-bold text-white tracking-tight italic mb-4">
+                    <h1 class="text-3xl md:text-6xl font-display font-bold text-white tracking-tight italic mb-4">
                         {{ $project->title }}
                     </h1>
-                    <div class="flex flex-wrap gap-3">
+                    <div class="flex flex-wrap gap-2 md:gap-3">
                         @foreach($project->tags as $tag)
                             <span class="px-4 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-bold uppercase tracking-wider">
                                 {{ $tag }}
@@ -22,17 +22,17 @@
                     </div>
                 </div>
 
-                <div class="flex flex-wrap gap-4">
+                <div class="flex flex-col sm:flex-row flex-wrap gap-4">
                     @if($project->demo_url)
                         <a href="{{ $project->demo_url }}" target="_blank" 
-                           class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-500/20 hover:scale-[1.05] active:scale-95 transition-all uppercase tracking-widest text-xs flex items-center gap-3">
+                           class="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-500/20 hover:scale-[1.05] active:scale-95 transition-all uppercase tracking-widest text-[10px] md:text-xs flex items-center justify-center sm:justify-start gap-3">
                             <i class="fas fa-external-link-alt"></i>
                             Ver Demo en Vivo
                         </a>
                     @endif
                     @if($project->github_url)
                         <a href="{{ $project->github_url }}" target="_blank" 
-                           class="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-bold hover:bg-white/10 transition-all uppercase tracking-widest text-xs flex items-center gap-3">
+                           class="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-white/5 border border-white/10 text-white rounded-2xl font-bold hover:bg-white/10 transition-all uppercase tracking-widest text-[10px] md:text-xs flex items-center justify-center sm:justify-start gap-3">
                             <i class="fab fa-github text-lg"></i>
                             Repositorio
                         </a>
@@ -67,11 +67,11 @@
 
                 <!-- Contenido Detallado -->
                 <div class="glass-card p-6 md:p-12 rounded-3xl md:rounded-[2.5rem] border-white/5 animate-fade-in" style="animation-delay: 0.3s">
-                    <h3 class="text-2xl font-display font-bold text-white mb-8 italic flex items-center gap-4">
-                        <span class="w-12 h-[2px] bg-indigo-500"></span>
+                    <h3 class="text-xl md:text-2xl font-display font-bold text-white mb-6 md:mb-8 italic flex items-center gap-3 md:gap-4">
+                        <span class="w-8 md:w-12 h-[2px] bg-indigo-500"></span>
                         Sobre el Proyecto
                     </h3>
-                    <div class="prose prose-invert max-w-none text-gray-400 leading-relaxed space-y-6 text-lg">
+                    <div class="prose prose-invert max-w-none text-gray-400 leading-relaxed space-y-4 md:space-y-6 text-base md:text-lg">
                         @if($project->content)
                             {!! nl2br(e($project->content)) !!}
                         @else
