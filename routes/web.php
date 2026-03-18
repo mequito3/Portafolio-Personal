@@ -47,10 +47,8 @@ Route::prefix('admin')
         Route::resource('experiences', ExperienceController::class)->except(['show']);
 
         // Mensajes de contacto
-        Route::get('contacts', [ContactController::class , 'index'])->name('contacts.index');
-        Route::get('contacts/{contact}', [ContactController::class , 'show'])->name('contacts.show');
-        Route::delete('contacts/{contact}', [ContactController::class , 'destroy'])->name('contacts.destroy');
-        Route::post('contacts/mark-all-read', [ContactController::class , 'markAllRead'])->name('contacts.mark-all-read');
+        Route::patch('contacts/mark-all-read', [ContactController::class , 'markAllRead'])->name('contacts.mark-all-read');
+        Route::resource('contacts', ContactController::class)->only(['index', 'show', 'destroy']);
 
         // Perfil
         Route::get('profile', [ProfileController::class , 'edit'])->name('profile.edit');
