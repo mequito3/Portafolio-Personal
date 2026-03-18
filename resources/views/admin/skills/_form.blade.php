@@ -34,8 +34,20 @@
         </div>
         
         {{-- AI Suggestions Dropdown --}}
-        <div x-show="suggestions.length > 0" x-transition class="absolute left-0 top-[calc(100%+8px)] w-full bg-gray-900 border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl">
+        <div x-show="suggestions.length > 0 || (search.trim().length > 0 && !knowledgeBase.some(s => s.name.toLowerCase() === search.trim().toLowerCase()))" x-transition class="absolute left-0 top-[calc(100%+8px)] w-full bg-gray-900 border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl">
             <ul class="max-h-60 overflow-y-auto custom-scrollbar">
+                {{-- Option to use custom name --}}
+                <li x-show="search.trim().length > 0 && !knowledgeBase.some(s => s.name.toLowerCase() === search.trim().toLowerCase())">
+                    <button type="button" @click="suggestions.length === 0 ? selectSuggestion({name: search, category: 'other', icon: 'fas fa-tag'}) : null" 
+                            class="w-full text-left px-5 py-3 text-sm text-indigo-400 hover:bg-indigo-500/20 hover:text-white transition-colors flex items-center gap-3 border-b border-white/5">
+                        <i class="fas fa-plus-circle text-lg"></i>
+                        <div class="flex flex-col">
+                            <span class="font-bold">Usar "<span x-text="search"></span>"</span>
+                            <span class="text-[10px] text-indigo-300/60 uppercase tracking-tighter">Habilidad Personalizada</span>
+                        </div>
+                    </button>
+                </li>
+
                 <template x-for="suggestion in suggestions" :key="suggestion.name">
                     <li>
                         <button type="button" @click="selectSuggestion(suggestion)" class="w-full text-left px-5 py-3 text-sm text-gray-300 hover:bg-indigo-500/20 hover:text-white transition-colors flex items-center justify-between group">

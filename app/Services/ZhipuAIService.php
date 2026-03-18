@@ -12,7 +12,11 @@ class ZhipuAIService
 
     public function __construct()
     {
-        $this->apiKey = config('services.zhipuai.key') ?? env('ZHIPUAI_API_KEY');
+        $this->apiKey = config('services.zhipuai.key');
+        if (!$this->apiKey) {
+            Log::warning('ZhipuAI API Key not found in config/services.php. Falling back to env().');
+            $this->apiKey = env('ZHIPUAI_API_KEY');
+        }
     }
 
     protected function generateToken(): string
