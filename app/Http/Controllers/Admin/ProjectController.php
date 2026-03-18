@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
+use App\Services\ZhipuAIService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -156,5 +158,25 @@ class ProjectController extends Controller
             $paths[] = $file->store('projects/gallery', 'public');
         }
         return $paths;
+    }
+
+    /**
+     * Sugiere tecnologías (tags) basándose en el título y descripción.
+     */
+    public function suggestTags(Request $request, ZhipuAIService $aiService): JsonResponse
+    {
+        $title = $request->input('title');
+        $description = $request->input('description');
+
+        if (!$title) {
+            return response()->json(['error' => 'Title is required'], 400);
+        }
+
+        $systemPrompt = "Eres un experto en desarrollo de software. Tu tarea es sugerir una lista de tecnologías (máximo 8) para un proyecto dado su título y descripción. Responde SOLO en formato JSON con la clave 'tags' que sea un array de strings. Ej: {'tags': ['Laravel', 'Vue.js', 'Tailwind CSS']}";
+        $userPrompt = "Proyecto: $title\nDescripción: $description";
+
+        $result = $aiService->getSuggestions($systemPrompt, $userPrompt);
+
+        return response()->json($result ?? ['tags' => []]);
     }
 }

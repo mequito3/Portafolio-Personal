@@ -259,9 +259,11 @@
                 @php $projectTags = collect((array)$project->tags)->map(fn($t) => Str::slug($t))->implode(' '); @endphp
                 <div class="project-card card-3d glass rounded-2xl overflow-hidden group animate-on-scroll" data-tags="{{ $projectTags }}" style="animation-delay: {{ $index * 0.1 }}s;">
                     <!-- Image Area -->
-                    <div class="relative h-48 overflow-hidden">
-                        <img src="{{ $project->image ? (Str::startsWith($project->image, 'http') ? $project->image : asset('storage/' . $project->image)) : 'https://via.placeholder.com/600x400/1a1a25/00ffff?text=Proyecto' }}" alt="{{ $project->title }}" class="project-image w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent"></div>
+                    <div class="relative aspect-video overflow-hidden bg-dark-800">
+                        <img src="{{ $project->image ? (Str::startsWith($project->image, 'http') ? $project->image : asset('storage/' . $project->image)) : 'https://via.placeholder.com/600x400/1a1a25/00ffff?text=Proyecto' }}" 
+                             alt="{{ $project->title }}" 
+                             class="project-image w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark-900/80 via-transparent to-transparent"></div>
                         
                         <!-- Overlay clickable area for Details -->
                         <a href="{{ route('portfolio.projects.show', $project) }}" class="absolute inset-0 z-10"></a>

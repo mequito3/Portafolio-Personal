@@ -12,17 +12,25 @@
 <div class="space-y-8" x-data="skillAutocomplete()">
     {{-- Name & AI Search --}}
     <div class="relative">
-        <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-[2px] mb-3 ml-1 flex items-center gap-2">
-            <i class="fas fa-magic text-indigo-400"></i> Nombre de la Habilidad
+        <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-[2px] mb-3 ml-1 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-magic text-indigo-400"></i> Nombre de la Habilidad
+            </div>
+            <button type="button" @click="suggestWithAI()" 
+                    class="text-[10px] bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 px-3 py-1 rounded-full border border-indigo-500/20 transition-all flex items-center gap-2 group"
+                    :disabled="loadingAI">
+                <i class="fas fa-wand-magic-sparkles" :class="loadingAI ? 'animate-spin' : 'group-hover:scale-110 transition-transform'"></i>
+                <span x-text="loadingAI ? 'Consultando...' : 'Sugerir con IA'"></span>
+            </button>
         </label>
         
         <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-600">
+            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-600 group-focus-within:text-indigo-400 transition-colors">
                 <i class="fas fa-search"></i>
             </div>
             <input type="text" name="name" x-model="search" @input="updateSuggestions" @keydown.enter.prevent="selectFirstSuggestion"
                    class="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.08] transition-all"
-                   placeholder="Empieza a escribir (ej: Laravel, Docker...) y autocompletaremos el icono y categoría." required>
+                   placeholder="Empieza a escribir (ej: Laravel, Docker...) o usa la IA para autocompletar." required>
         </div>
         
         {{-- AI Suggestions Dropdown --}}
@@ -110,8 +118,9 @@
             search: '{{ old('name', $skill?->name ?? '') }}',
             selectedCategory: '{{ old('category', $skill?->category ?? 'frontend') }}',
             selectedIcon: '{{ old('icon', $skill?->icon ?? 'fas fa-code') }}',
+            loadingAI: false,
             
-            // Base de datos de IA para autocompletar
+            // Base de datos de IA para autocompletar (Fallback)
             knowledgeBase: [
                 { name: 'Laravel', category: 'backend', icon: 'fab fa-laravel' },
                 { name: 'PHP', category: 'backend', icon: 'fab fa-php' },
@@ -139,22 +148,55 @@
                 const term = this.search.toLowerCase();
                 return this.knowledgeBase.filter(s => s.name.toLowerCase().includes(term));
             },
+
+            async suggestWithAI() {
+                if (!this.search) {
+                    alert('Por favor, escribe el nombre de la habilidad para que la IA pueda sugerir categoría e icono.');
+                    return;
+                }
+
+                this.loadingAI = true;
+                try {
+                    const response = await fetch('{{ route('admin.skills.suggest-meta') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ name: this.search })
+                    });
+                    const data = await response.json();
+                    if (data.category && data.icon) {
+                        this.selectedCategory = data.category;
+                        this.selectedIcon = data.icon;
+                        
+                        // Verificar si la categoría existe en el select
+                        this.validateCategory();
+                    }
+                } catch (error) {
+                    console.error('AI Error:', error);
+                } finally {
+                    this.loadingAI = false;
+                }
+            },
+
+            validateCategory() {
+                setTimeout(() => {
+                    const selectEl = document.querySelector('select[name="category"]');
+                    if (selectEl) {
+                        const validOptions = Array.from(selectEl.options).map(o => o.value);
+                        if (!validOptions.includes(this.selectedCategory)) {
+                            this.selectedCategory = 'other';
+                        }
+                    }
+                }, 50);
+            },
             
             selectSuggestion(suggestion) {
                 this.search = suggestion.name;
                 this.selectedCategory = suggestion.category;
                 this.selectedIcon = suggestion.icon;
-                
-                // Retrasar levemente la comprobación para que el DOM se haya actualizado si es necesario
-                setTimeout(() => {
-                    const selectEl = document.querySelector('select[name="category"]');
-                    if (selectEl) {
-                        const validOptions = Array.from(selectEl.options).map(o => o.value);
-                        if (!validOptions.includes(suggestion.category)) {
-                            this.selectedCategory = 'other'; // Usamos 'other' por defecto si no se encuentra
-                        }
-                    }
-                }, 10);
+                this.validateCategory();
             },
             
             selectFirstSuggestion() {

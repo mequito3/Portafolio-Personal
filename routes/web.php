@@ -34,13 +34,16 @@ Route::prefix('admin')
 
         // Proyectos
         Route::post('projects/reorder', [ProjectController::class , 'reorder'])->name('projects.reorder');
+        Route::post('projects/suggest-tags', [ProjectController::class , 'suggestTags'])->name('projects.suggest-tags');
         Route::resource('projects', ProjectController::class)->except(['show']);
 
         // Skills
         Route::post('skills/reorder', [SkillController::class , 'reorder'])->name('skills.reorder');
+        Route::post('skills/suggest-meta', [SkillController::class , 'suggestMeta'])->name('skills.suggest-meta');
         Route::resource('skills', SkillController::class)->except(['show']);
 
         // Experiencia
+        Route::post('experiences/suggest-description', [ExperienceController::class , 'suggestDescription'])->name('experiences.suggest-description');
         Route::resource('experiences', ExperienceController::class)->except(['show']);
 
         // Mensajes de contacto

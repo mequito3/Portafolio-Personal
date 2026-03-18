@@ -46,10 +46,10 @@
             <!-- Columna Izquierda: Imagen y Galería -->
             <div class="lg:col-span-2 space-y-8 animate-fade-in" style="animation-delay: 0.2s">
                 <!-- Imagen Principal -->
-                <div class="glass-card overflow-hidden rounded-3xl md:rounded-[2.5rem] border-white/5 shadow-2xl group">
+                <div class="glass-card overflow-hidden rounded-3xl md:rounded-[2.5rem] border-white/5 shadow-2xl group bg-dark-800">
                     <img src="{{ Str::startsWith($project->image, 'http') ? $project->image : asset('storage/' . $project->image) }}" 
                          alt="{{ $project->title }}" 
-                         class="w-full aspect-video object-cover transition-transform duration-700 group-hover:scale-105">
+                         class="w-full h-auto min-h-[300px] object-cover object-top transition-transform duration-700 group-hover:scale-105">
                 </div>
 
                 <!-- Galería si existe -->

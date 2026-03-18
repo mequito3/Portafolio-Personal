@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSkillRequest;
 use App\Http\Requests\UpdateSkillRequest;
 use App\Models\Skill;
+use App\Services\ZhipuAIService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -88,5 +90,28 @@ class SkillController extends Controller
     {
         $skill->delete();
         return back()->with('success', 'Habilidad eliminada.');
+    }
+
+    /**
+     * Sugiere categoría e icono basándose en el nombre de la habilidad.
+     */
+    public function suggestMeta(Request $request, ZhipuAIService $aiService): JsonResponse
+    {
+        $name = $request->input('name');
+
+        if (!$name) {
+            return response()->json(['error' => 'Name is required'], 400);
+        }
+
+        $categories = implode(', ', array_keys(Skill::$categories));
+        $systemPrompt = "Eres un experto en diseño UI y desarrollo. Tu tarea es sugerir la categoría más adecuada y un icono de FontAwesome 6 (clase CSS, ej: 'fab fa-laravel') para una habilidad técnica dada.
+        Categorías permitidas: [$categories].
+        Responde SOLO en formato JSON con las claves 'category' e 'icon'. Ej: {'category': 'frontend', 'icon': 'fab fa-react'}";
+        
+        $userPrompt = "Habilidad: $name";
+
+        $result = $aiService->getSuggestions($systemPrompt, $userPrompt);
+
+        return response()->json($result ?? ['category' => 'other', 'icon' => 'fas fa-code']);
     }
 }

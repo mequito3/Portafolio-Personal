@@ -45,9 +45,17 @@
 
         <div class="space-y-6">
             <div x-data="techAutocomplete()" class="relative">
-                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-[2px] mb-3 ml-1 flex items-center gap-2">
-                    <i class="fas fa-microchip text-indigo-400"></i>
-                    Tecnologías Asistidas por IA
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-[2px] mb-3 ml-1 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-microchip text-indigo-400"></i>
+                        Tecnologías Asistidas por IA
+                    </div>
+                    <button type="button" @click="suggestWithAI()" 
+                            class="text-[10px] bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 px-3 py-1 rounded-full border border-indigo-500/20 transition-all flex items-center gap-2 group"
+                            :disabled="loadingAI">
+                        <i class="fas fa-wand-magic-sparkles" :class="loadingAI ? 'animate-spin' : 'group-hover:scale-110 transition-transform'"></i>
+                        <span x-text="loadingAI ? 'Pensando...' : 'Sugerir con IA'"></span>
+                    </button>
                 </label>
                 
                 {{-- Hidden input holding the actual comma-separated values --}}
@@ -85,7 +93,7 @@
                         </ul>
                     </div>
                 </div>
-                <p class="mt-2 text-[10px] text-gray-500 font-medium italic ml-1">* Empieza a escribir para ver sugerencias IA.</p>
+                <p class="mt-2 text-[10px] text-gray-500 font-medium italic ml-1">* Empieza a escribir para ver sugerencias IA o usa el botón para autocompletar.</p>
 
                 {{-- Init Script for Alpine.js --}}
                 <script>
@@ -93,6 +101,7 @@
                         Alpine.data('techAutocomplete', () => ({
                             tags: {!! json_encode(old('tags', $project?->tagsString) ? explode(',', old('tags', $project?->tagsString)) : []) !!}.map(t => t.trim()).filter(t => t),
                             search: '',
+                            loadingAI: false,
                             commonTechs: ['Laravel', 'PHP', 'Tailwind CSS', 'Vue.js', 'React', 'Livewire', 'MySQL', 'PostgreSQL', 'Docker', 'AWS', 'JavaScript', 'TypeScript', 'Node.js', 'Alpine.js', 'HTML5', 'CSS3', 'Git', 'Bootstrap', 'Figma', 'Python', 'Django'],
                             
                             get suggestions() {
@@ -101,6 +110,40 @@
                                     tech.toLowerCase().includes(this.search.toLowerCase()) && 
                                     !this.tags.includes(tech)
                                 );
+                            },
+
+                            async suggestWithAI() {
+                                const title = document.querySelector('input[name="title"]').value;
+                                const description = document.querySelector('textarea[name="description"]').value;
+
+                                if (!title) {
+                                    alert('Por favor, ingresa al menos un título para que la IA pueda sugerir tecnologías.');
+                                    return;
+                                }
+
+                                this.loadingAI = true;
+                                try {
+                                    const response = await fetch('{{ route('admin.projects.suggest-tags') }}', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                        },
+                                        body: JSON.stringify({ title, description })
+                                    });
+                                    const data = await response.json();
+                                    if (data.tags) {
+                                        data.tags.forEach(tag => {
+                                            if (!this.tags.includes(tag)) {
+                                                this.tags.push(tag);
+                                            }
+                                        });
+                                    }
+                                } catch (error) {
+                                    console.error('AI Error:', error);
+                                } finally {
+                                    this.loadingAI = false;
+                                }
                             },
 
                             addTag() {
@@ -163,7 +206,7 @@
     </div>
 
     {{-- Media & Links --}}
-    <div class="glass-card p-8 rounded-[2rem] border-white/5">
+    <div class="glass-card p-8 rounded-[2rem] border-white/5" x-data="imagePreview()">
         <h3 class="font-display font-bold text-lg text-white mb-8 flex items-center gap-3">
             <i class="fas fa-link text-indigo-400"></i>
             Media y Enlaces
@@ -173,33 +216,72 @@
             <div>
                 <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-[2px] mb-3 ml-1">Subir Imagen Principal</label>
                 <div class="relative group">
-                    <input type="file" name="image" accept="image/*"
+                    <input type="file" name="image" accept="image/*" @change="previewMainImage($event)"
                            class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-indigo-500/20 file:text-indigo-400 hover:file:bg-indigo-500/30 transition-all cursor-pointer">
                 </div>
-                @if(isset($project) && $project->image)
-                    <div class="mt-5 glass p-3 inline-block rounded-2xl border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase tracking-[2px] mb-2 ml-1">Imagen Actual:</p>
-                        <img src="{{ Str::startsWith($project->image, 'http') ? $project->image : asset('storage/' . $project->image) }}" alt="Preview" class="h-24 w-auto rounded-xl border border-white/10 object-cover shadow-lg">
-                    </div>
-                @endif
+                
+                {{-- Main Image Preview --}}
+                <div class="mt-5 glass p-3 inline-block rounded-2xl border-white/5" x-show="mainPreview || '{{ $project?->image }}'">
+                    <p class="text-[10px] text-gray-500 uppercase tracking-[2px] mb-2 ml-1" x-text="mainPreview ? 'Nueva Previsualización:' : 'Imagen Actual:'"></p>
+                    <img :src="mainPreview || '{{ Str::startsWith($project?->image, 'http') ? $project?->image : asset('storage/' . $project?->image) }}'" 
+                         class="h-32 w-auto rounded-xl border border-white/10 object-cover shadow-lg">
+                </div>
             </div>
 
             <div>
                 <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-[2px] mb-3 ml-1">Galería de Imágenes (Capturas de pantalla)</label>
                 <div class="relative group">
-                    <input type="file" name="gallery_images[]" accept="image/*" multiple
+                    <input type="file" name="gallery_images[]" accept="image/*" multiple @change="previewGallery($event)"
                            class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-indigo-500/20 file:text-indigo-400 hover:file:bg-indigo-500/30 transition-all cursor-pointer">
                 </div>
-                @if(isset($project) && is_array($project->images))
-                    <div class="mt-5 glass p-4 rounded-2xl border-white/5 flex flex-wrap gap-3">
-                        @foreach($project->images as $img)
-                            <div class="relative group/img">
-                                <img src="{{ Str::startsWith($img, 'http') ? $img : asset('storage/' . $img) }}" alt="Gallery Item" class="h-16 w-16 rounded-lg border border-white/10 object-cover shadow-lg">
+
+                {{-- Gallery Previews --}}
+                <div class="mt-5 glass p-4 rounded-2xl border-white/5 flex flex-wrap gap-3" x-show="galleryPreviews.length > 0 || {{ isset($project) && is_array($project->images) ? 'true' : 'false' }}">
+                    <template x-for="(src, index) in galleryPreviews" :key="index">
+                        <div class="relative group/img">
+                            <img :src="src" class="h-16 w-16 rounded-lg border border-emerald-500/50 object-cover shadow-lg">
+                        </div>
+                    </template>
+                    
+                    @if(isset($project) && is_array($project->images))
+                        <template x-if="galleryPreviews.length === 0">
+                            <div class="flex flex-wrap gap-3">
+                                @foreach($project->images as $img)
+                                    <img src="{{ Str::startsWith($img, 'http') ? $img : asset('storage/' . $img) }}" class="h-16 w-16 rounded-lg border border-white/10 object-cover shadow-lg opacity-60">
+                                @endforeach
                             </div>
-                        @endforeach
-                    </div>
-                @endif
+                        </template>
+                    @endif
+                </div>
             </div>
+
+            <script>
+                function imagePreview() {
+                    return {
+                        mainPreview: null,
+                        galleryPreviews: [],
+                        
+                        previewMainImage(event) {
+                            const file = event.target.files[0];
+                            if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => { this.mainPreview = e.target.result; };
+                                reader.readAsDataURL(file);
+                            }
+                        },
+
+                        previewGallery(event) {
+                            this.galleryPreviews = [];
+                            const files = event.target.files;
+                            Array.from(files).forEach(file => {
+                                const reader = new FileReader();
+                                reader.onload = (e) => { this.galleryPreviews.push(e.target.result); };
+                                reader.readAsDataURL(file);
+                            });
+                        }
+                    }
+                }
+            </script>
 
             <div>
                 <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-[2px] mb-3 ml-1">Enlace del Proyecto (Demo)</label>
