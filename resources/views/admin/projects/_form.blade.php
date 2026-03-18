@@ -66,11 +66,20 @@
                     
                     {{-- Selected Tags Container --}}
                     <template x-for="(tag, index) in tags" :key="index">
-                        <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-2">
+                        <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-2 group/tag animate-fade-in">
+                            <i class="fas fa-tag text-[10px] text-indigo-400/50"></i>
                             <span x-text="tag"></span>
                             <button type="button" @click="removeTag(index)" class="hover:text-white transition-colors focus:outline-none">
                                 <i class="fas fa-times text-[10px]"></i>
                             </button>
+                        </span>
+                    </template>
+
+                    {{-- Loading Indicator for AI --}}
+                    <template x-if="loadingAI">
+                        <span class="flex items-center gap-2 px-3 py-1.5 text-xs text-indigo-400 animate-pulse">
+                            <i class="fas fa-spinner animate-spin"></i>
+                            IA sugiriendo...
                         </span>
                     </template>
 
@@ -80,8 +89,19 @@
                            placeholder="Ej: Laravel (Presiona Enter)">
                            
                     {{-- Autocomplete Dropdown --}}
-                    <div x-show="suggestions.length > 0" x-transition.opacity class="absolute left-0 top-[calc(100%+8px)] w-full bg-gray-900 border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl">
-                        <ul class="max-h-48 overflow-y-auto py-2 custom-scrollbar">
+                    <div x-show="search.trim().length > 0 || suggestions.length > 0" x-transition.opacity class="absolute left-0 top-[calc(100%+8px)] w-full bg-gray-900 border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl">
+                        <ul class="max-h-68 overflow-y-auto py-2 custom-scrollbar">
+                            {{-- Option to Add Custom Tag --}}
+                            <li x-show="search.trim().length > 0 && !tags.map(t => t.toLowerCase()).includes(search.trim().toLowerCase())">
+                                <button type="button" @click="addTag()" class="w-full text-left px-5 py-3 text-sm text-indigo-400 hover:bg-indigo-500/20 hover:text-white transition-colors flex items-center gap-3 border-b border-white/5">
+                                    <i class="fas fa-plus-circle text-lg"></i>
+                                    <div class="flex flex-col">
+                                        <span class="font-bold">Agregar "<span x-text="search"></span>"</span>
+                                        <span class="text-[10px] text-indigo-300/60 uppercase tracking-tighter">Nueva Tecnología Personalizada</span>
+                                    </div>
+                                </button>
+                            </li>
+
                             <template x-for="suggestion in suggestions" :key="suggestion">
                                 <li>
                                     <button type="button" @click="selectSuggestion(suggestion)" class="w-full text-left px-5 py-2.5 text-sm text-gray-300 hover:bg-indigo-500/20 hover:text-white transition-colors flex items-center gap-3">
@@ -99,17 +119,32 @@
                 <script>
                     document.addEventListener('alpine:init', () => {
                         Alpine.data('techAutocomplete', () => ({
-                            tags: {!! json_encode(old('tags', $project?->tagsString) ? explode(',', old('tags', $project?->tagsString)) : []) !!}.map(t => t.trim()).filter(t => t),
+                            tags: {!! json_encode(old('tags', $project?->tags_string) ? array_map('trim', explode(',', old('tags', $project?->tags_string))) : []) !!},
                             search: '',
                             loadingAI: false,
-                            commonTechs: ['Laravel', 'PHP', 'Tailwind CSS', 'Vue.js', 'React', 'Livewire', 'MySQL', 'PostgreSQL', 'Docker', 'AWS', 'JavaScript', 'TypeScript', 'Node.js', 'Alpine.js', 'HTML5', 'CSS3', 'Git', 'Bootstrap', 'Figma', 'Python', 'Django'],
+                            commonTechs: ['Laravel', 'PHP', 'Tailwind CSS', 'Vue.js', 'React', 'Livewire', 'MySQL', 'PostgreSQL', 'Docker', 'AWS', 'JavaScript', 'TypeScript', 'Node.js', 'Alpine.js', 'HTML5', 'CSS3', 'Git', 'Bootstrap', 'Figma', 'Python', 'Django', 'Next.js', 'Svelte', 'Ionic', 'Flutter', 'Firebase', 'MongoDB'],
                             
                             get suggestions() {
-                                if (this.search.trim() === '') return [];
-                                return this.commonTechs.filter(tech => 
-                                    tech.toLowerCase().includes(this.search.toLowerCase()) && 
-                                    !this.tags.includes(tech)
+                                const term = this.search.trim().toLowerCase();
+                                if (term === '') return [];
+                                
+                                // Filtrar las comunes que ya están en la lista
+                                let filtered = this.commonTechs.filter(tech => 
+                                    tech.toLowerCase().includes(term) && 
+                                    !this.tags.map(t => t.toLowerCase()).includes(tech.toLowerCase())
                                 );
+
+                                // Si no está en las comunes exactas, permitir agregarlo como nuevo
+                                if (term && !this.tags.map(t => t.toLowerCase()).includes(term)) {
+                                    // Evitar duplicados si el término coincide con una sugerencia filtrada
+                                    const exactMatch = filtered.find(f => f.toLowerCase() === term);
+                                    if (!exactMatch) {
+                                        // Lo agregamos al principio de las sugerencias como "nuevo"
+                                        // Pero para que Alpine lo renderice bien, lo manejamos en el HTML mejor
+                                    }
+                                }
+                                
+                                return filtered;
                             },
 
                             async suggestWithAI() {
@@ -134,8 +169,9 @@
                                     const data = await response.json();
                                     if (data.tags) {
                                         data.tags.forEach(tag => {
-                                            if (!this.tags.includes(tag)) {
-                                                this.tags.push(tag);
+                                            const normalizedTag = tag.trim();
+                                            if (normalizedTag && !this.tags.map(t => t.toLowerCase()).includes(normalizedTag.toLowerCase())) {
+                                                this.tags.push(normalizedTag);
                                             }
                                         });
                                     }
@@ -146,10 +182,10 @@
                                 }
                             },
 
-                            addTag() {
-                                let val = this.search.trim();
-                                if (val && !this.tags.includes(val)) {
-                                    this.tags.push(val);
+                            addTag(val = null) {
+                                let tagVal = (val || this.search).trim();
+                                if (tagVal && !this.tags.map(t => t.toLowerCase()).includes(tagVal.toLowerCase())) {
+                                    this.tags.push(tagVal);
                                 }
                                 this.search = '';
                             },
@@ -165,10 +201,7 @@
                             },
 
                             selectSuggestion(tech) {
-                                if (!this.tags.includes(tech)) {
-                                    this.tags.push(tech);
-                                }
-                                this.search = '';
+                                this.addTag(tech);
                             }
                         }))
                     })

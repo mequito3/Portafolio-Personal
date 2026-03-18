@@ -172,8 +172,12 @@ class ProjectController extends Controller
             return response()->json(['error' => 'Title is required'], 400);
         }
 
-        $systemPrompt = "Eres un experto en desarrollo de software. Tu tarea es sugerir una lista de tecnologías (máximo 8) para un proyecto dado su título y descripción. Responde SOLO en formato JSON con la clave 'tags' que sea un array de strings. Ej: {'tags': ['Laravel', 'Vue.js', 'Tailwind CSS']}";
-        $userPrompt = "Proyecto: $title\nDescripción: $description";
+        $systemPrompt = "Eres un arquitecto de software experto. Tu tarea es sugerir una lista de 5 a 12 tecnologías, lenguajes, frameworks, librerías o herramientas para un proyecto. 
+        Analiza el contexto del título y la descripción. 
+        Responde ÚNICAMENTE en formato JSON con la clave 'tags' que sea un array de strings. 
+        Ejemplo: {\"tags\": [\"Next.js\", \"TypeScript\", \"Prisma\", \"Tailwind CSS\", \"PostgreSQL\", \"Vercel\"]}";
+        
+        $userPrompt = "Proyecto: $title\nDescripción: $description\nGenera los mejores tags técnicos para este proyecto.";
 
         $result = $aiService->getSuggestions($systemPrompt, $userPrompt);
 
