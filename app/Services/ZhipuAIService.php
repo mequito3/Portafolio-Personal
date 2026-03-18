@@ -15,9 +15,6 @@ class ZhipuAIService
         $this->apiKey = config('services.zhipuai.key') ?? env('ZHIPUAI_API_KEY');
     }
 
-    /**
-     * Generate JWT for Zhipu AI authentication.
-     */
     protected function generateToken(): string
     {
         $parts = explode('.', $this->apiKey);
@@ -29,16 +26,20 @@ class ZhipuAIService
         $timestamp = time() * 1000;
         $exp = $timestamp + 3600000; // 1 hour
 
-        $header = $this->base64UrlEncode(json_encode(['alg' => 'HS256', 'sign_type' => 'SIGN']));
-        $payload = $this->base64UrlEncode(json_encode([
+        $header = ['alg' => 'HS256', 'sign_type' => 'SIGN'];
+        $payload = [
             'api_key' => $id,
             'exp' => $exp,
             'timestamp' => $timestamp
-        ]));
+        ];
 
-        $signature = hash_hmac('sha256', "$header.$payload", $secret);
+        $encodedHeader = $this->base64UrlEncode(json_encode($header));
+        $encodedPayload = $this->base64UrlEncode(json_encode($payload));
         
-        return "$header.$payload.$signature";
+        // Zhipu Signature: HMAC-SHA256(secret, header.payload)
+        $signature = hash_hmac('sha256', "$encodedHeader.$encodedPayload", $secret);
+        
+        return "$encodedHeader.$encodedPayload.$signature";
     }
 
     protected function base64UrlEncode(string $data): string

@@ -104,14 +104,19 @@ class SkillController extends Controller
         }
 
         $categories = implode(', ', array_keys(Skill::$categories));
-        $systemPrompt = "Eres un experto en diseño UI y desarrollo. Tu tarea es sugerir la categoría más adecuada y un icono de FontAwesome 6 (clase CSS, ej: 'fab fa-laravel') para una habilidad técnica dada.
-        Categorías permitidas: [$categories].
-        Responde SOLO en formato JSON con las claves 'category' e 'icon'. Ej: {'category': 'frontend', 'icon': 'fab fa-react'}";
+        $systemPrompt = "Eres un experto en diseño de UI/UX y desarrollo web. Tu tarea es sugerir la categoría técnica y el icono de FontAwesome 6 más representativo para una habilidad.
+        Solo puedes elegir una de estas categorías: [$categories].
+        El icono debe ser la clase CSS completa (ej: 'fab fa-laravel', 'fas fa-database', 'fab fa-js').
+        Responde ÚNICAMENTE en formato JSON con las claves 'category' e 'icon'.
+        Ejemplo: {\"category\": \"frontend\", \"icon\": \"fab fa-react\"}";
         
-        $userPrompt = "Habilidad: $name";
+        $userPrompt = "Habilidad: $name. Sugiere la categoría e icono perfectos.";
 
         $result = $aiService->getSuggestions($systemPrompt, $userPrompt);
 
-        return response()->json($result ?? ['category' => 'other', 'icon' => 'fas fa-code']);
+        // Fallback default if AI fails or categorization is unclear
+        $fallback = ['category' => 'other', 'icon' => 'fas fa-tag'];
+        
+        return response()->json($result ?? $fallback);
     }
 }

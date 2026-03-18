@@ -91,6 +91,22 @@
     {{-- Hidden Icon Input --}}
     <input type="hidden" name="icon" x-model="selectedIcon">
 
+    {{-- Icon Preview --}}
+    <div class="glass p-6 rounded-2xl border border-white/5 flex items-center justify-between group animate-fade-in" x-show="selectedIcon">
+        <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-indigo-500/10 rounded-xl flex items-center justify-center border border-indigo-500/20 group-hover:scale-110 transition-transform">
+                <i :class="selectedIcon + ' text-3xl text-indigo-400 font-awesome-render'"></i>
+            </div>
+            <div>
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Icono Seleccionado</p>
+                <p class="text-white font-mono text-xs" x-text="selectedIcon"></p>
+            </div>
+        </div>
+        <div class="text-[10px] text-indigo-300/50 italic" x-show="loadingAI">
+            <i class="fas fa-spinner animate-spin mr-1"></i> Actualizando icono...
+        </div>
+    </div>
+
     {{-- Order + Active Data --}}
     <div class="flex items-center gap-8 bg-black/20 p-5 rounded-2xl border border-white/5">
         <div class="w-1/3">
