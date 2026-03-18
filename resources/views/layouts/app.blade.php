@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es" class="scroll-smooth overflow-x-hidden">
 <head>
     <style>html, body { background-color: #0a0a0f !important; color: white; }</style>
     <meta charset="UTF-8">
@@ -177,7 +177,7 @@
         @yield('styles')
     </style>
 </head>
-<body class="bg-dark-900 text-white font-sans antialiased overflow-x-hidden selection:bg-neon-magenta/30 selection:text-white">
+<body class="bg-dark-900 text-white font-sans antialiased overflow-x-hidden w-full max-w-full selection:bg-neon-magenta/30 selection:text-white">
     
     <!-- Reading Progress Bar -->
     <div class="fixed top-0 left-0 h-1 bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-magenta z-[100] transition-all duration-150 ease-out" id="reading-progress" style="width: 0%"></div>

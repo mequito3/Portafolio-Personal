@@ -3,7 +3,7 @@
 @section('content')
     
     <!-- Hero Section -->
-    <section id="hero" class="relative min-h-screen flex items-center justify-center px-4">
+    <section id="hero" class="relative min-h-screen flex items-center justify-center px-4 overflow-hidden">
         <div class="relative z-10 text-center max-w-4xl mx-auto">
 
             <!-- Greeting -->
@@ -67,7 +67,7 @@
 
 
     <!-- About Section -->
-    <section id="about" class="relative py-20 lg:py-32 px-4 scroll-mt-16">
+    <section id="about" class="relative py-20 lg:py-32 px-4 scroll-mt-16 overflow-hidden">
         <div class="max-w-6xl mx-auto">
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <!-- Avatar & Visual -->
@@ -211,7 +211,7 @@
     </section>
 
     <!-- Projects Section -->
-    <section id="projects" class="relative py-20 lg:py-32 px-4 scroll-mt-16">
+    <section id="projects" class="relative py-20 lg:py-32 px-4 scroll-mt-16 overflow-hidden">
         <div class="max-w-7xl mx-auto">
             <!-- Section Header -->
             <div class="text-center mb-10 animate-on-scroll">
@@ -310,7 +310,7 @@
     </section>
 
     <!-- Skills Section -->
-    <section id="skills" class="relative py-20 lg:py-32 px-4 scroll-mt-16">
+    <section id="skills" class="relative py-20 lg:py-32 px-4 scroll-mt-16 overflow-hidden">
         <div class="max-w-6xl mx-auto">
             <!-- Section Header -->
             <div class="text-center mb-16 animate-on-scroll">
@@ -368,7 +368,7 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="relative py-20 lg:py-32 px-4 scroll-mt-16">
+    <section id="contact" class="relative py-20 lg:py-32 px-4 scroll-mt-16 overflow-hidden">
         <div class="max-w-6xl mx-auto">
             <!-- Section Header -->
             <div class="text-center mb-16 animate-on-scroll">
