@@ -28,9 +28,11 @@ class Skill extends Model
     public static array $categories = [
         'frontend'  => 'Frontend',
         'backend'   => 'Backend',
-        'database'  => 'Base de datos & Herramientas',
+        'database'  => 'Base de datos',
         'devops'    => 'DevOps & Cloud',
+        'server'    => 'Servidores & Hosting',
         'mobile'    => 'Mobile',
+        'tools'     => 'Herramientas & Otros',
         'other'     => 'Otros',
     ];
 

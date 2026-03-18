@@ -28,7 +28,7 @@
             <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-gray-600 group-focus-within:text-indigo-400 transition-colors">
                 <i class="fas fa-search"></i>
             </div>
-            <input type="text" name="name" x-model="search" @input="updateSuggestions" @keydown.enter.prevent="selectFirstSuggestion"
+            <input type="text" name="name" x-model="search" @input="updateSuggestions" @keydown.enter.prevent="handleEnter()"
                    class="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.08] transition-all"
                    placeholder="Empieza a escribir (ej: Laravel, Docker...) o usa la IA para autocompletar." required>
         </div>
@@ -38,12 +38,12 @@
             <ul class="max-h-60 overflow-y-auto custom-scrollbar">
                 {{-- Option to use custom name --}}
                 <li x-show="search.trim().length > 0 && !knowledgeBase.some(s => s.name.toLowerCase() === search.trim().toLowerCase())">
-                    <button type="button" @click="suggestions.length === 0 ? selectSuggestion({name: search, category: 'other', icon: 'fas fa-tag'}) : null" 
+                    <button type="button" @click="selectCustom()" 
                             class="w-full text-left px-5 py-3 text-sm text-indigo-400 hover:bg-indigo-500/20 hover:text-white transition-colors flex items-center gap-3 border-b border-white/5">
                         <i class="fas fa-plus-circle text-lg"></i>
                         <div class="flex flex-col">
                             <span class="font-bold">Usar "<span x-text="search"></span>"</span>
-                            <span class="text-[10px] text-indigo-300/60 uppercase tracking-tighter">Habilidad Personalizada</span>
+                            <span class="text-[10px] text-indigo-300/60 uppercase tracking-tighter">Habilidad Personalizada (Presiona Enter para confirmar)</span>
                         </div>
                     </button>
                 </li>
@@ -225,12 +225,33 @@
                 this.selectedCategory = suggestion.category;
                 this.selectedIcon = suggestion.icon;
                 this.validateCategory();
+                // Clear suggestions after selection
+                setTimeout(() => { this.search = suggestion.name; }, 10);
+            },
+
+            selectCustom() {
+                const customName = this.search;
+                this.selectSuggestion({name: customName, category: 'other', icon: 'fas fa-tag'});
+                // Trigger AI automatically for custom skills
+                this.suggestWithAI();
+            },
+
+            handleEnter() {
+                if (this.suggestions.length > 0) {
+                    this.selectSuggestion(this.suggestions[0]);
+                } else if (this.search.trim().length > 0) {
+                    this.selectCustom();
+                }
             },
             
             selectFirstSuggestion() {
                 if(this.suggestions.length > 0) {
                     this.selectSuggestion(this.suggestions[0]);
                 }
+            },
+
+            updateSuggestions() {
+                // This is used by Alpine for reactivity
             }
         }))
     })

@@ -106,7 +106,8 @@ class SkillController extends Controller
         $categories = implode(', ', array_keys(Skill::$categories));
         $systemPrompt = "Eres un experto en diseño de UI/UX y desarrollo web. Tu tarea es sugerir la categoría técnica y el icono de FontAwesome 6 más representativo para una habilidad.
         Solo puedes elegir una de estas categorías: [$categories].
-        El icono debe ser la clase CSS completa (ej: 'fab fa-laravel', 'fas fa-database', 'fab fa-js').
+        El icono debe ser la clase CSS completa (ej: 'fab fa-laravel', 'fas fa-database', 'fab fa-js', 'fas fa-server', 'fas fa-cloud', 'fas fa-screwdriver-wrench').
+        Si la habilidad es sobre hosting o servidores, usa 'server' y un icono como 'fas fa-server' o 'fas fa-cloud'.
         Responde ÚNICAMENTE en formato JSON con las claves 'category' e 'icon'.
         Ejemplo: {\"category\": \"frontend\", \"icon\": \"fab fa-react\"}";
         
