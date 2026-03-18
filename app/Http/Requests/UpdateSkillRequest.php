@@ -15,7 +15,7 @@ class UpdateSkillRequest extends FormRequest
     {
         return [
             'name'      => ['required', 'string', 'max:100'],
-            'category'  => ['required', 'string', 'in:frontend,backend,database,devops,mobile,other'],
+            'category'  => ['required', 'string', 'in:' . implode(',', array_keys(\App\Models\Skill::$categories))],
             'level'     => ['required', 'integer', 'min:0', 'max:100'],
             'icon'      => ['nullable', 'string', 'max:200'],
             'order'     => ['nullable', 'integer', 'min:0'],

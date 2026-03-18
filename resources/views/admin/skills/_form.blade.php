@@ -164,6 +164,11 @@
                 { name: 'Git', category: 'tools', icon: 'fab fa-git-alt' },
                 { name: 'GitHub', category: 'tools', icon: 'fab fa-github' },
                 { name: 'Figma', category: 'tools', icon: 'fab fa-figma' },
+                { name: 'Hostinger', category: 'server', icon: 'fas fa-server' },
+                { name: 'Ubuntu', category: 'server', icon: 'fab fa-linux' },
+                { name: 'AWS', category: 'server', icon: 'fab fa-aws' },
+                { name: 'DigitalOcean', category: 'server', icon: 'fab fa-digital-ocean' },
+                { name: 'Nginx', category: 'server', icon: 'fas fa-server' },
                 { name: 'Python', category: 'backend', icon: 'fab fa-python' },
                 { name: 'Java', category: 'backend', icon: 'fab fa-java' },
                 { name: 'Android', category: 'mobile', icon: 'fab fa-android' },
@@ -230,10 +235,18 @@
             },
 
             selectCustom() {
-                const customName = this.search;
-                this.selectSuggestion({name: customName, category: 'other', icon: 'fas fa-tag'});
-                // Trigger AI automatically for custom skills
-                this.suggestWithAI();
+                const customName = this.search.trim();
+                if (!customName) return;
+                
+                this.search = customName;
+                this.selectedCategory = 'other';
+                this.selectedIcon = 'fas fa-tag';
+                this.validateCategory();
+                
+                // Use a little delay to ensure UI updates before AI call
+                setTimeout(() => { 
+                    this.suggestWithAI(); 
+                }, 100);
             },
 
             handleEnter() {

@@ -103,13 +103,19 @@ class SkillController extends Controller
             return response()->json(['error' => 'Name is required'], 400);
         }
 
-        $categories = implode(', ', array_keys(Skill::$categories));
-        $systemPrompt = "Eres un experto en diseño de UI/UX y desarrollo web. Tu tarea es sugerir la categoría técnica y el icono de FontAwesome 6 más representativo para una habilidad.
-        Solo puedes elegir una de estas categorías: [$categories].
-        El icono debe ser la clase CSS completa (ej: 'fab fa-laravel', 'fas fa-database', 'fab fa-js', 'fas fa-server', 'fas fa-cloud', 'fas fa-screwdriver-wrench').
-        Si la habilidad es sobre hosting o servidores, usa 'server' y un icono como 'fas fa-server' o 'fas fa-cloud'.
-        Responde ÚNICAMENTE en formato JSON con las claves 'category' e 'icon'.
-        Ejemplo: {\"category\": \"frontend\", \"icon\": \"fab fa-react\"}";
+        $categoriesList = array_keys(Skill::$categories);
+        $categoriesString = implode(', ', $categoriesList);
+        
+        $systemPrompt = "Eres un experto en infraestructura y desarrollo. Tu misión es categorizar habilidades técnicas.
+        DEBES elegir exactamente una de estas claves de categoría: [$categoriesString].
+        
+        REGLAS CRÍTICAS:
+        1. Si la habilidad es un hosting, VPS o servidor (ej: Hostinger, AWS, Google Cloud, Azure, DigitalOcean, Cloudflare, Ubuntu, Nginx), la categoría DEBE SER 'server'.
+        2. El icono debe ser la clase completa de FontAwesome 6 (ej: 'fas fa-server', 'fab fa-aws', 'fas fa-cloud', 'fab fa-linux').
+        3. Para lenguajes de backend (PHP, Python, Go), usa 'backend'. Para librerías visuales, usa 'frontend'.
+        
+        RESPUESTA: Solo un objeto JSON plano.
+        EJEMPLO: {\"category\": \"server\", \"icon\": \"fas fa-server\"}";
         
         $userPrompt = "Habilidad: $name. Sugiere la categoría e icono perfectos.";
 
