@@ -1,102 +1,113 @@
-# 🚀 Premium Developer Portfolio - Americo Labs
+# Portafolio Personal
 
+![Laravel](https://img.shields.io/badge/Laravel-10-FF2D20?logo=laravel&logoColor=white)
+![Three.js](https://img.shields.io/badge/Three.js-3D-black?logo=threedotjs&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css&logoColor=white)
+![Live](https://img.shields.io/badge/Live-portafolio.americolabs.com-green)
 
+> Portfolio personal autoadministrable construido con Laravel 10. Incluye efectos 3D con Three.js, diseño glassmorphism, panel de administración CMS propio y optimización SEO.
 
-Una plataforma de portafolio moderna, elegante y de alto rendimiento construida con **Laravel 10**, diseñada para impresionar con una estética **Cyberpunk-Glassmorphism** y efectos 3D dinámicos.
+**[Ver Demo →](https://portafolio.americolabs.com)**
 
-🔗 **Demo en vivo:** [portafolio.americolabs.com](https://portafolio.americolabs.com/)
-
-![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-
----
-
-## ✨ Características Principales
-
-### 🎨 Diseño Frontend (Visual Excellence)
-- **Glassmorphism Puro**: Interfaz ultra-moderna con efectos de desenfoque y transparencias.
-- **Micro-interacciones**: Animaciones suaves usando Tailwind CSS y Alpine.js.
-- **Fondo 3D Interactivo**: Experiencia inmersiva integrada con Three.js.
-- **Totalmente Responsivo**: Optimización específica para móviles, tablets y escritorio.
-- **Dark Mode Nativo**: Paleta de colores curada con acentos Neón (Cyan y Magenta).
-
-### 🛠️ Panel de Administración (Full Control)
-- **Gestión de Proyectos**: CRUD completo con soporte para imágenes, etiquetas y estados.
-- **Gestión de Habilidades**: Sistema de habilidades categorizadas con nivel de dominio.
-- **Experiencia Laboral**: Historial profesional ordenable y dinámico.
-- **Centro de Mensajes**: Gestión de contactos entrantes con notificaciones Toast.
-- **Configuración de Perfil**: Control total sobre logos, favicons, redes sociales y stack tecnológico.
-
-### 🧠 Innovación & Estabilidad
-- **Sugerencias IA**: Autocompletado inteligente de tecnologías y habilidades en el admin.
-- **Integridad de Datos**: Validaciones robustas para prevenir errores de base de datos.
-- **Carga Optimizada**: Uso eficiente de recursos y almacenamiento local.
+[![Portfolio Preview](https://img.shields.io/badge/Ver_Demo_en_Vivo-portafolio.americolabs.com-blue?style=for-the-badge)](https://portafolio.americolabs.com)
 
 ---
 
-## 🛠️ Stack Tecnológico
+## ✨ Características
 
-- **Core:** [Laravel 10](https://laravel.com/)
-- **Frontend:** [Tailwind CSS](https://tailwindcss.com/) & [Alpine.js](https://alpinejs.dev/)
-- **Efectos 3D:** [Three.js](https://threejs.org/)
-- **Base de Datos:** MySQL / PostgreSQL
-- **Iconos:** FontAwesome 6 & Heroicons
+- **Diseño glassmorphism** con efectos visuales modernos y animaciones CSS personalizadas
+- **Escena 3D interactiva** renderizada con Three.js integrada en la vista principal
+- **Panel de administración CMS** para gestionar proyectos, skills y experiencia sin tocar código
+- **Contenido 100% dinámico** — toda la información se edita desde el panel admin
+- **Responsive design** adaptado a mobile, tablet y desktop
+- **SEO optimizado** — metadatos, estructura semántica y rendimiento
 
----
+## 🛠️ Stack
 
-## 🚀 Instalación y Configuración
+| Capa | Tecnología |
+|---|---|
+| Backend | PHP 8.2+ / Laravel 10 |
+| Frontend | Blade Templates, Alpine.js |
+| Estilos | Tailwind CSS |
+| 3D / Animaciones | Three.js, CSS personalizado |
+| Base de datos | MySQL / PostgreSQL |
+| Iconografía | FontAwesome 6, Heroicons |
+| Deploy | portafolio.americolabs.com |
 
-Sigue estos pasos para poner en marcha tu portafolio localmente:
+## 🚀 Instalación
 
-### 1. Requisitos Previos
-- PHP >= 8.1
-- Composer
-- Node.js & NPM
-- Servidor MySQL (Laragon recomendado)
+**Requisitos previos:** PHP 8.2+, Composer, Node.js 18+
 
-### 2. Clonar e Instalar Dependencias
 ```bash
-# Instalar dependencias de PHP
+# 1. Clonar el repositorio
+git clone https://github.com/mequito3/Portafolio-Personal.git
+cd Portafolio-Personal
+
+# 2. Instalar dependencias PHP
 composer install
 
-# Instalar dependencias de JS
-npm install && npm run dev
-```
+# 3. Instalar dependencias JS y compilar assets
+npm install
+npm run build
 
-### 3. Configuración de Entorno
-```bash
-# Crear archivo .env
+# 4. Configurar variables de entorno
 cp .env.example .env
-
-# Generar clave de aplicación
 php artisan key:generate
-```
-*Configura las credenciales de tu base de datos en el archivo `.env`.*
 
-### 4. Base de Datos y Almacenamiento
-```bash
-# Ejecutar migraciones
-php artisan migrate
+# 5. Configurar base de datos en .env
+# DB_DATABASE, DB_USERNAME, DB_PASSWORD
 
-# Crear enlace simbólico para imágenes
-php artisan storage:link
-```
+# 6. Ejecutar migraciones
+php artisan migrate --seed
 
-### 5. Iniciar Servidor
-```bash
+# 7. Levantar servidor local
 php artisan serve
 ```
-Visita `http://127.0.0.1:8000` para ver tu portafolio.
 
----
+La aplicación estará disponible en `http://localhost:8000`.
 
-## 📸 Demo Visual
+## 📁 Estructura
 
-> [!TIP]
-> Puedes personalizar todos los logos y colores desde el panel de administración en `/admin/profile`.
+```
+Portafolio-Personal/
+├── app/
+│   ├── Http/Controllers/     # Controladores frontend y admin
+│   └── Models/               # Proyecto, Skill, Experiencia
+├── resources/
+│   ├── views/
+│   │   ├── portfolio/        # Vistas públicas del portfolio
+│   │   └── admin/            # Panel de administración
+│   └── js/                   # Three.js y Alpine.js
+├── routes/
+│   ├── web.php               # Rutas públicas
+│   └── admin.php             # Rutas del panel admin
+└── database/migrations/      # Esquema de contenido dinámico
+```
 
+## 🎛️ Personalización vía Panel Admin
 
----
+Todo el contenido del portfolio se gestiona desde el panel de administración, sin necesidad de modificar código:
 
-## 📝 Licencia
+- **Proyectos** — Agregar, editar o eliminar proyectos con imagen, descripción, tecnologías y links
+- **Skills** — Gestionar el listado de habilidades técnicas con niveles y categorías
+- **Experiencia** — Actualizar el historial profesional y formación académica
 
-Este proyecto está bajo la licencia MIT. Hecho con ❤️ por Americo Labs.
+Acceso al panel: `http://localhost:8000/admin` (requiere credenciales de administrador)
+
+## 📝 Estado
+
+✅ En producción — [portafolio.americolabs.com](https://portafolio.americolabs.com)
+
+Último update: Marzo 2026
+
+## 📄 Licencia
+
+Este proyecto es de uso personal. El código puede servir de referencia, pero el diseño y contenido pertenecen al autor.
+
+## 👤 Autor
+
+**Américo Álvarez** — Desarrollador Full-Stack & Especialista en Automatizaciones con IA
+
+- GitHub: [@mequito3](https://github.com/mequito3)
+- Portfolio: [portafolio.americolabs.com](https://portafolio.americolabs.com)
+- Email: americooficial23@gmail.com
